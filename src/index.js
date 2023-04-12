@@ -1,22 +1,18 @@
 import './css/styles.css';
-
+import Notiflix from 'notiflix';
 const DEBOUNCE_DELAY = 300;
+const refs = {
+  input: document.querySelector(`#search-box`),
+  ulList: document.querySelector(`.country-list`),
+  container: document.querySelector(`.country-info`),
+};
 
-const promise = new Promise((resolve, reject) => {
-  const canFull = Math.random() > 1;
-
-  setTimeout(() => {
-    if (canFull) {
-      resolve(`Сработал пропис`);
-    }
-    reject(`промис реджектнулся ошибка ебаный рот`);
-  }, 3000);
-});
-
-function ready(resolve) {
-  console.log(`здарвоа это ${resolve}`);
+function fetchCountries(name) {
+  const resp = fetch(`https://restcountries.com/v3.1/name/${name}`)
+    .then(Response => {
+      Response.json();
+    })
+    .then(country => {});
 }
 
-function fail(reject) {
-  console.log(`ошибка бля ${reject}`);
-}
+fetchCountries(`deutschland`);
