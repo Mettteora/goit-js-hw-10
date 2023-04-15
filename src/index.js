@@ -10,9 +10,14 @@ const refs = {
 function fetchCountries(name) {
   const resp = fetch(`https://restcountries.com/v3.1/name/${name}`)
     .then(Response => {
-      Response.json();
+      return Response.json();
     })
-    .then(country => {});
+    .then(country => {
+      console.log(country);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 }
 
 fetchCountries(`deutschland`);
