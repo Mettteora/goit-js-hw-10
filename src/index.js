@@ -1,6 +1,7 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
 import debounce from 'lodash.debounce';
+import fetchCountries from './fetchCountries';
 
 const DEBOUNCE_DELAY = 300;
 const refs = {
@@ -11,67 +12,75 @@ const refs = {
 
 refs.input.addEventListener(`input`, debounce(searchC, DEBOUNCE_DELAY));
 
-function searchC(e) {
-  e.preventDefault();
-  const search = refs.input.value;
-  console.log(search);
+inputRef.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
-  function fetchCountries(search) {
-    fetch(`https://restcountries.com/v3.1/name/${search}`)
-      .then(response => {
-        return response.json();
-      })
-      .then(country => {
-        console.log(country);
-        console.log();
-        const markupTest = render(country);
-        console.log(markupTest);
-      })
-      .then(render)
-      .catch(error => {
-        console.log(error);
-      });
+function onInput(e) {
+  const country = e.target.value.trim();
+
+  if (!country) {
+    e.target.value = '';
+    clearMarkup(container);
+    clearMarkup(ulList);
+    return;
   }
 
-  function render(country) {
-    const markup = `(<div>
-      <img src="{{flag.png}}" alt="" />
-      <h3>{{ capital }}</h3>
-    </div>)`(country);
-    refs.container.innerHTML = markup;
-  }
-
-  fetchCountries(search);
+  fetchCountries(country)
+    .then(data => {
+      if (data.length > 10) {
+        Notiflix.Notify.info(
+          'Too many matches found. Please enter a more specific name.'
+        );
+      } else {
+        displayMarkup(data);
+      }
+    })
+    .catch(error => {
+      if (error.message === '404') {
+        clearMarkup(container);
+        clearMarkup(ulList);
+        Notiflix.Notify.failure('Oops, there is no country with that name');
+      }
+    });
 }
 
-// import './css/styles.css';
-// import Notiflix from 'notiflix';
-// const DEBOUNCE_DELAY = 300;
-// const refs = {
-//   input: document.querySelector(`#search-box`),
-//   ulList: document.querySelector(`.country-list`),
-//   container: document.querySelector(`.country-info`),
-// };
+function displayMarkup(data) {
+  if (data.length === 1) {
+    const markup = data.reduce(
+      (markup, country) => markup + createMarkupForCounty(country),
+      ''
+    );
+    clearMarkup(ulList);
+    container.innerHTML = markup;
+  } else {
+    const list = data.reduce(
+      (markup, country) => markup + createMarkupForCounties(country),
+      ''
+    );
+    clearMarkup(container);
+    ulList.innerHTML = list;
+  }
+}
 
-// refs.input.addEventListener(`input`, searchC);
+function createMarkupForCounties({ name, flags }) {
+  return `<li><img src =${flags.svg} alt='flags of ${name.official}' width=60 height=40/><p>${name.official}</p></li>`;
+}
 
-// function searchC(e) {
-//   e.preventDefault();
-//   const form = e.currentTarget;
-//   const search = refs.input.value;
-//   console.log(search);
+function createMarkupForCounty({
+  name,
+  capital,
+  population,
+  flags,
+  languages,
+}) {
+  return `<img src =${flags.svg} alt='flags of ${
+    name.official
+  }' width=100% height=80/> <p>${name.official}</p>
+	<ul class="porps"><li>Capital: ${capital}</li><li>Population: ${population}</li><li>Languages: ${Object.values(
+    languages
+  )}</li>
+	</ul>`;
+}
 
-//   function fetchCountries(search) {
-//     const resp = fetch(`https://restcountries.com/v3.1/name/${name}`)
-//       .then(Response => {
-//         return Response.json();
-//       })
-//       .then(country => {
-//         console.log(country);
-//         console.log();
-//       })
-//       .catch(error => {
-//         console.log(error);
-//       });
-//   }
-// }
+function clearMarkup(element) {
+  return (element.innerHTML = '');
+}
