@@ -48,7 +48,7 @@ function displayMarkup(data) {
       ''
     );
     clearMarkup(refs.ulList);
-    container.innerHTML = markup;
+    refs.container.innerHTML = markup;
   } else {
     const list = data.reduce(
       (markup, country) => markup + createMarkupForCounties(country),
