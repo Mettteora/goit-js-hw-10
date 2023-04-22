@@ -10,8 +10,6 @@ const refs = {
   container: document.querySelector(`.country-info`),
 };
 
-refs.input.addEventListener(`input`, debounce(searchC, DEBOUNCE_DELAY));
-
 refs.input.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(e) {
