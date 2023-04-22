@@ -19,8 +19,8 @@ function onInput(e) {
 
   if (!country) {
     e.target.value = '';
-    clearMarkup(container);
-    clearMarkup(ulList);
+    clearMarkup(refs.container);
+    clearMarkup(refs.ulList);
     return;
   }
 
@@ -36,8 +36,8 @@ function onInput(e) {
     })
     .catch(error => {
       if (error.message === '404') {
-        clearMarkup(container);
-        clearMarkup(ulList);
+        clearMarkup(refs.container);
+        clearMarkup(refs.ulList);
         Notiflix.Notify.failure('Oops, there is no country with that name');
       }
     });
@@ -49,15 +49,15 @@ function displayMarkup(data) {
       (markup, country) => markup + createMarkupForCounty(country),
       ''
     );
-    clearMarkup(ulList);
+    clearMarkup(refs.ulList);
     container.innerHTML = markup;
   } else {
     const list = data.reduce(
       (markup, country) => markup + createMarkupForCounties(country),
       ''
     );
-    clearMarkup(container);
-    ulList.innerHTML = list;
+    clearMarkup(refs.container);
+    refs.ulList.innerHTML = list;
   }
 }
 
