@@ -12,7 +12,7 @@ const refs = {
 
 refs.input.addEventListener(`input`, debounce(searchC, DEBOUNCE_DELAY));
 
-inputRef.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
+refs.input.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(e) {
   const country = e.target.value.trim();
